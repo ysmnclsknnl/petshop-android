@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,7 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.petshop.data.model.Pet
-import com.example.petshop.data.model.PetType
 import com.example.petshop.ui.theme.PetShopTheme
 import kotlinx.coroutines.launch
 
@@ -52,26 +52,16 @@ class MainActivity : ComponentActivity() {
                             pets = try {
                                 PetShopClient().getPets()
                             } catch (e: Exception) {
-                                listOf<Pet>(
-                                    Pet(
-                                        id = "0",
-                                        name = e.message ?: "Error",
-                                        age = 0,
-                                        type = PetType.CAT,
-                                        description = "Error",
-                                        photoLink = "Error"
-                                    )
-                                )
+                                emptyList()
                             }
                         }
                     }
-                    Column(
-                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                    LazyColumn(
+                        horizontalAlignment = CenterHorizontally,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        pets.map { pet ->
+                        items(pets) { pet ->
                             PetCard(pet = pet)
-                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
                 }
@@ -80,39 +70,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@Composable
-//fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
-//    Card(modifier.fillMaxWidth().padding(16.dp)) {
-//        AsyncImage(
-//            model = pet.photoLink,
-//            contentDescription = "image of ${pet.name}",
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp)
-//        )
-//        Text(
-//            text = pet.name,
-//            modifier = modifier
-//        )
-//        Text(
-//            text = pet.description,
-//            modifier = modifier
-//        )
-//        Text(
-//            text = "${pet.age}",
-//            modifier = modifier
-//        )
-//        if (!pet.adopted) {
-//            Button(
-//                onClick = { /*TODO*/ },
-//                enabled = !pet.adopted,
-//                colors = ButtonDefaults.buttonColors(Color.Green)
-//            ) {
-//                Text(text = "Reserve")
-//            }
-//        }
-//    }
-//}
 
 @Composable
 fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
@@ -125,7 +82,7 @@ fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = CenterHorizontally
         ) {
             // Pet Image
             AsyncImage(
@@ -165,7 +122,7 @@ fun PetCard(pet: Pet, modifier: Modifier = Modifier) {
                     disabledContainerColor = Color.Gray,
                 )
             ) {
-                Text(text = "${if (pet.adopted) "Reserved" else "Reserve"}")
+                Text(text = if (pet.adopted) "Reserved" else "Reserve")
             }
         }
     }
